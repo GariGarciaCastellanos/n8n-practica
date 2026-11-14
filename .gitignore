@@ -1,0 +1,7 @@
+.env
+.mcp.json
+GUIA.md
+__pycache__/
+.venv/
+*.log
+.claude/settings.local.json

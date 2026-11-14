@@ -1,0 +1,554 @@
+{
+  "updatedAt": "2026-11-14T19:27:39.497Z",
+  "createdAt": "2026-11-12T13:43:38.855Z",
+  "id": "Hfa9nxTioArlfUC2",
+  "name": "Formulario de contacto",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "formulario-contacto",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7c611441-c874-454f-83ab-686500c06e7c",
+      "name": "Webhook",
+      "webhookId": "8a759a16-e2d9-417e-bf1b-d7c5d070ff27"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6dbf9970-01b4-452b-8cfa-b6b216e942d2",
+              "name": "fecha",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+              "type": "string"
+            },
+            {
+              "id": "4f78e482-ef62-4299-af36-8bfb65ec441d",
+              "name": "nombre",
+              "value": "={{ $json.nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "7247b12c-be14-4daa-8f69-086e2cbf3f66",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "8d064b58-57d6-4257-a771-3ffb5be42519",
+              "name": "telefono",
+              "value": "={{ $json.telefono }}",
+              "type": "string"
+            },
+            {
+              "id": "cb7c63c5-cd08-4e85-95a5-6c3922c488f2",
+              "name": "mensaje",
+              "value": "={{ $json.mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "282cdd8c-27e5-4e24-b9d4-655e0c336680",
+              "name": "origen",
+              "value": "formulario web",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-0000-0000-0000-000000000001",
+              "name": "valido",
+              "value": "={{ $json.valido }}",
+              "type": "boolean"
+            },
+            {
+              "id": "a1b2c3d4-0000-0000-0000-000000000002",
+              "name": "motivo",
+              "value": "={{ $json.errores.join('; ') }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        672,
+        0
+      ],
+      "id": "2c6b90bf-5fc9-4357-989f-883787353ddd",
+      "name": "Limpiar datos"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1qDGiKs5b_8bayeGEEP3TjynMddvWDYDQCv17WjhChrc/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Contactos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qDGiKs5b_8bayeGEEP3TjynMddvWDYDQCv17WjhChrc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.email }}",
+            "fecha": "={{ $json.fecha }}",
+            "nombre": "={{ $json.nombre }}",
+            "telefono": "={{ $json.telefono }}",
+            "mensaje": "={{ $json.mensaje }}",
+            "origen": "={{ $json.origen }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensaje",
+              "displayName": "mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "origen",
+              "displayName": "origen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "3f97636c-2cee-40b0-bf8a-210e328c816a",
+      "name": "Guardar en Contactos",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "enviosmspython@gmail.com",
+        "subject": "=Nuevo contacto: {{ $('Limpiar datos').item.json.nombre }}",
+        "message": "=Nombre: {{ $('Limpiar datos').item.json.nombre }}\nEmail: {{ $('Limpiar datos').item.json.email }}\nTeléfono: {{ $('Limpiar datos').item.json.telefono }}\nMensaje: {{ $('Limpiar datos').item.json.mensaje }}\nFecha: {{ $('Limpiar datos').item.json.fecha }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "96b2c6d9-771e-4b33-b22b-9e44439a6690",
+      "name": "Avisar por correo",
+      "webhookId": "ff4a484d-0161-4275-9bd5-14bce049475c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QBEJlhOcZeKSdI8z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "id": "fa8a5962-9fa0-41f4-aabc-98757b03d0b6",
+      "name": "¿Fallo de prueba?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body.provocar_fallo === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "c092b2aa-24c8-4fa4-81d4-db9e6ce80901",
+      "name": "Fallo provocado",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        224,
+        220
+      ],
+      "parameters": {
+        "errorType": "errorMessage",
+        "errorMessage": "Fallo provocado a propósito para probar el aviso"
+      }
+    },
+    {
+      "id": "c58244c9-5dcc-4ffe-98a8-34d65193d3a1",
+      "name": "¿Es válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valido }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "c3731756-0910-4303-b4b4-954efd66f142",
+      "name": "Guardar en Errores",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        220
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1qDGiKs5b_8bayeGEEP3TjynMddvWDYDQCv17WjhChrc/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Errores"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $json.fecha }}",
+            "nombre": "={{ $json.nombre }}",
+            "email": "={{ $json.email }}",
+            "telefono": "={{ $json.telefono }}",
+            "mensaje": "={{ $json.mensaje }}",
+            "origen": "={{ $json.origen }}",
+            "motivo": "={{ $json.motivo }}"
+          },
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensaje",
+              "displayName": "mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "origen",
+              "displayName": "origen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "options": {}
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "320e7f70-3165-4e34-8559-5e258c6eb56f",
+      "name": "Validar formulario",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://validador:8000/validar",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {}
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000
+    }
+  ],
+  "connections": {
+    "Guardar en Contactos": {
+      "main": [
+        [
+          {
+            "node": "Avisar por correo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "¿Fallo de prueba?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Fallo de prueba?": {
+      "main": [
+        [
+          {
+            "node": "Fallo provocado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validar formulario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpiar datos": {
+      "main": [
+        [
+          {
+            "node": "¿Es válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar formulario": {
+      "main": [
+        [
+          {
+            "node": "Limpiar datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es válido?": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Contactos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guardar en Errores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "64d04434-48bc-44d6-b440-28e604d15b9a",
+  "activeVersionId": null,
+  "versionCounter": 98,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-12T13:43:38.855Z",
+      "createdAt": "2026-11-12T13:43:38.855Z",
+      "role": "workflow:owner",
+      "workflowId": "Hfa9nxTioArlfUC2",
+      "projectId": "jxVjeRIK2XrqFfqu",
+      "project": {
+        "updatedAt": "2026-11-12T10:10:14.659Z",
+        "createdAt": "2026-11-12T10:04:03.395Z",
+        "id": "jxVjeRIK2XrqFfqu",
+        "name": "Gari Garcia Castellanos <garigarciacastellanos@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "75861a3d-6e3e-4b02-aaa0-a43801c39ecd"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Parte 6c: renombrar a Es valido y motivo dinamico",
+    "description": "Updated nodes: ¿Es válido?, Guardar en Errores\nConnections: 3 added, 3 removed"
+  }
+}

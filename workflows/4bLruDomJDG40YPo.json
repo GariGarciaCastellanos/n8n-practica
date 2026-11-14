@@ -1,0 +1,101 @@
+{
+  "updatedAt": "2026-11-14T19:11:10.607Z",
+  "createdAt": "2026-11-14T19:11:10.607Z",
+  "id": "4bLruDomJDG40YPo",
+  "name": "Aviso de errores",
+  "description": "Avisa por correo cuando falla el flujo Formulario de contacto.",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "6a8fd5ea-85d6-4db8-9bc9-df662dba393c",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "a75e2080-5f0a-4bfb-8a06-bd772e829aae",
+      "name": "Enviar aviso",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "sendTo": "enviosmspython@gmail.com",
+        "subject": "=Fallo en {{ $json.workflow.name }}",
+        "message": "=Flujo: {{ $json.workflow.name }}\nNodo: {{ $json.execution.lastNodeExecuted }}\nError: {{ $json.execution.error.message }}\nEnlace: {{ $json.execution.url }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QBEJlhOcZeKSdI8z",
+          "name": "Gmail account"
+        }
+      },
+      "webhookId": "bf1605f9-d9ed-4c51-a643-25238331c54c"
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Enviar aviso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "e405e33b-8be9-4236-93c6-456e3809e4e7",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-14T19:11:10.607Z",
+      "createdAt": "2026-11-14T19:11:10.607Z",
+      "role": "workflow:owner",
+      "workflowId": "4bLruDomJDG40YPo",
+      "projectId": "jxVjeRIK2XrqFfqu",
+      "project": {
+        "updatedAt": "2026-11-12T10:10:14.659Z",
+        "createdAt": "2026-11-12T10:04:03.395Z",
+        "id": "jxVjeRIK2XrqFfqu",
+        "name": "Gari Garcia Castellanos <garigarciacastellanos@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "75861a3d-6e3e-4b02-aaa0-a43801c39ecd"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version inicial",
+    "description": "Error Trigger que envia un correo de aviso con los datos del fallo."
+  }
+}
