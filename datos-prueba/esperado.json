@@ -1,0 +1,568 @@
+{
+  "duplicado-01.pdf": {
+    "archivo": "duplicado-01.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "227.80",
+        "cuota": "47.84",
+        "tipo_iva": 21
+      }
+    ],
+    "duplicado_de": "texto-01.pdf",
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-09-25",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B22197461",
+    "numero": "F2025-0001",
+    "proveedor": "Transportes Aguilar e Hijos S.L.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "275.64"
+  },
+  "duplicado-02.pdf": {
+    "archivo": "duplicado-02.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "700.50",
+        "cuota": "147.11",
+        "tipo_iva": 21
+      }
+    ],
+    "duplicado_de": "escaneado-01.pdf",
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-10-23",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "36296456H",
+    "numero": "F2025-0001",
+    "proveedor": "Vivero La Acacia",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "847.61"
+  },
+  "escaneado-01.pdf": {
+    "archivo": "escaneado-01.pdf",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "700.50",
+        "cuota": "147.11",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-10-23",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "36296456H",
+    "numero": "F2025-0001",
+    "proveedor": "Vivero La Acacia",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_escaneado",
+    "total": "847.61"
+  },
+  "escaneado-02.pdf": {
+    "archivo": "escaneado-02.pdf",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "390.30",
+        "cuota": "39.03",
+        "tipo_iva": 10
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-08-24",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B20311627",
+    "numero": "F2025-0001",
+    "proveedor": "Construcciones Bermejo S.L.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_escaneado",
+    "total": "429.33"
+  },
+  "escaneado-03.pdf": {
+    "archivo": "escaneado-03.pdf",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "362.80",
+        "cuota": "76.19",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-10-24",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B23519366",
+    "numero": "F2025-0001",
+    "proveedor": "Talleres Montealto S.L.",
+    "retencion_irpf": "54.42",
+    "tipo_documento_esperado": "pdf_escaneado",
+    "total": "384.57"
+  },
+  "escaneado-04.pdf": {
+    "archivo": "escaneado-04.pdf",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "293.25",
+        "cuota": "61.58",
+        "tipo_iva": 21
+      },
+      {
+        "base": "195.50",
+        "cuota": "7.82",
+        "tipo_iva": 4
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-10-03",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "93204435V",
+    "numero": "F2025-0001",
+    "proveedor": "Pasteleria La Espiga",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_escaneado",
+    "total": "558.15"
+  },
+  "escaneado-05.pdf": {
+    "archivo": "escaneado-05.pdf",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "615.00",
+        "cuota": "129.15",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-09-15",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "28081374F",
+    "numero": "F2025-0001",
+    "proveedor": "Ferreteria El Roble",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_escaneado",
+    "total": "744.15"
+  },
+  "escaneado-06-error.pdf": {
+    "archivo": "escaneado-06-error.pdf",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "865.05",
+        "cuota": "181.66",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "revision",
+    "fecha": "2025-10-09",
+    "moneda": "EUR",
+    "motivos_esperados": [
+      "El total no cuadra con el desglose"
+    ],
+    "nif_proveedor": "A41900184",
+    "numero": "F2025-0001",
+    "proveedor": "Distribuciones Vega y Asociados S.A.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_escaneado",
+    "total": "999.35"
+  },
+  "foto-01.jpg": {
+    "archivo": "foto-01.jpg",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "475.00",
+        "cuota": "99.75",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-08-13",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B84594852",
+    "numero": "F2025-0002",
+    "proveedor": "Informatica Nortesur S.L.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "imagen",
+    "total": "574.75"
+  },
+  "foto-02.jpg": {
+    "archivo": "foto-02.jpg",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "348.25",
+        "cuota": "34.83",
+        "tipo_iva": 10
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-09-04",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B23519366",
+    "numero": "F2025-0002",
+    "proveedor": "Talleres Montealto S.L.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "imagen",
+    "total": "383.08"
+  },
+  "foto-03.jpg": {
+    "archivo": "foto-03.jpg",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "541.08",
+        "cuota": "113.63",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-10-10",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "A56324924",
+    "numero": "F2025-0002",
+    "proveedor": "Lavanderia Industrial Brisa S.A.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "imagen",
+    "total": "654.71"
+  },
+  "foto-04.jpg": {
+    "archivo": "foto-04.jpg",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "478.60",
+        "cuota": "100.51",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-09-05",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B92282557",
+    "numero": "F2025-0002",
+    "proveedor": "Suministros Hervas S.L.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "imagen",
+    "total": "579.11"
+  },
+  "foto-05-error.jpg": {
+    "archivo": "foto-05-error.jpg",
+    "camino_esperado": "vision",
+    "desglose_iva": [
+      {
+        "base": "496.00",
+        "cuota": "104.16",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "revision",
+    "fecha": "2025-09-26",
+    "moneda": "EUR",
+    "motivos_esperados": [
+      "El total no cuadra con el desglose"
+    ],
+    "nif_proveedor": "36296456H",
+    "numero": "F2025-0002",
+    "proveedor": "Vivero La Acacia",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "imagen",
+    "total": "627.02"
+  },
+  "inyeccion-01-error.pdf": {
+    "archivo": "inyeccion-01-error.pdf",
+    "camino_esperado": "texto",
+    "contiene_texto_oculto": true,
+    "desglose_iva": [
+      {
+        "base": "1170.00",
+        "cuota": "245.70",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "revision",
+    "fecha": "2025-10-29",
+    "moneda": "EUR",
+    "motivos_esperados": [
+      "El total no cuadra con el desglose"
+    ],
+    "nif_proveedor": "71858435H",
+    "numero": "F2025-0002",
+    "proveedor": "Optica Ferran",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "1453.55"
+  },
+  "inyeccion-02-error.pdf": {
+    "archivo": "inyeccion-02-error.pdf",
+    "camino_esperado": "texto",
+    "contiene_texto_oculto": true,
+    "desglose_iva": [
+      {
+        "base": "565.00",
+        "cuota": "118.65",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "revision",
+    "fecha": "2025-10-18",
+    "moneda": "EUR",
+    "motivos_esperados": [
+      "El total no cuadra con el desglose"
+    ],
+    "nif_proveedor": "A41900184",
+    "numero": "F2025-0002",
+    "proveedor": "Distribuciones Vega y Asociados S.A.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "668.53"
+  },
+  "nofactura-01.pdf": {
+    "archivo": "nofactura-01.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [],
+    "es_factura": false,
+    "estado_esperado": "rechazado",
+    "fecha": "2025-08-13",
+    "moneda": "EUR",
+    "motivos_esperados": [
+      "No es una factura"
+    ],
+    "nif_proveedor": "B20311627",
+    "numero": "PRE2025-047",
+    "proveedor": "Construcciones Bermejo S.L.",
+    "retencion_irpf": null,
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "293.25"
+  },
+  "nofactura-02.pdf": {
+    "archivo": "nofactura-02.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [],
+    "es_factura": false,
+    "estado_esperado": "rechazado",
+    "fecha": "2025-10-24",
+    "moneda": "EUR",
+    "motivos_esperados": [
+      "No es una factura"
+    ],
+    "nif_proveedor": "B22197461",
+    "numero": "ALB2025-953",
+    "proveedor": "Transportes Aguilar e Hijos S.L.",
+    "retencion_irpf": null,
+    "tipo_documento_esperado": "pdf_texto",
+    "total": null
+  },
+  "texto-01.pdf": {
+    "archivo": "texto-01.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "227.80",
+        "cuota": "47.84",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-09-25",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B22197461",
+    "numero": "F2025-0001",
+    "proveedor": "Transportes Aguilar e Hijos S.L.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "275.64"
+  },
+  "texto-02.pdf": {
+    "archivo": "texto-02.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "237.90",
+        "cuota": "49.96",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-10-01",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "A56324924",
+    "numero": "F2025-0001",
+    "proveedor": "Lavanderia Industrial Brisa S.A.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "287.86"
+  },
+  "texto-03.pdf": {
+    "archivo": "texto-03.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "2080.30",
+        "cuota": "436.86",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-09-10",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "X2050898B",
+    "numero": "F2025-0001",
+    "proveedor": "Asesoria Pinares y Rull",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "2517.16"
+  },
+  "texto-04.pdf": {
+    "archivo": "texto-04.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "357.50",
+        "cuota": "75.08",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-09-20",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B84594852",
+    "numero": "F2025-0001",
+    "proveedor": "Informatica Nortesur S.L.",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "432.58"
+  },
+  "texto-05.pdf": {
+    "archivo": "texto-05.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "636.00",
+        "cuota": "133.56",
+        "tipo_iva": 21
+      },
+      {
+        "base": "424.00",
+        "cuota": "42.40",
+        "tipo_iva": 10
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-08-17",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "30552668C",
+    "numero": "F2025-0001",
+    "proveedor": "Marcos Oteiza, servicios de fontaneria",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "1235.96"
+  },
+  "texto-06.pdf": {
+    "archivo": "texto-06.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "1230.00",
+        "cuota": "258.30",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-10-16",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "B92282557",
+    "numero": "F2025-0001",
+    "proveedor": "Suministros Hervas S.L.",
+    "retencion_irpf": "184.50",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "1303.80"
+  },
+  "texto-07.pdf": {
+    "archivo": "texto-07.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "562.95",
+        "cuota": "118.22",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "aprobado",
+    "fecha": "2025-10-26",
+    "moneda": "EUR",
+    "motivos_esperados": [],
+    "nif_proveedor": "71858435H",
+    "numero": "F2025-0001",
+    "proveedor": "Optica Ferran",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "681.17"
+  },
+  "texto-08-error.pdf": {
+    "archivo": "texto-08-error.pdf",
+    "camino_esperado": "texto",
+    "desglose_iva": [
+      {
+        "base": "716.05",
+        "cuota": "150.37",
+        "tipo_iva": 21
+      }
+    ],
+    "es_factura": true,
+    "estado_esperado": "revision",
+    "fecha": "2025-08-18",
+    "moneda": "EUR",
+    "motivos_esperados": [
+      "El total no cuadra con el desglose"
+    ],
+    "nif_proveedor": "92101749C",
+    "numero": "F2025-0001",
+    "proveedor": "Clara Ibanez Diseno Grafico",
+    "retencion_irpf": "0.00",
+    "tipo_documento_esperado": "pdf_texto",
+    "total": "898.45"
+  }
+}

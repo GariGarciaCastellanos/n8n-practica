@@ -63,6 +63,18 @@ services:
       - "8000:8000"
     restart: unless-stopped
 
+  extractor:
+    build: ./extractor
+    ports:
+      - "8001:8000"
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      MODELO_IA: ${MODELO_IA:-claude-haiku-5-5}
+      IMPORTE_MAX_AUTO: ${IMPORTE_MAX_AUTO:-1500}
+      PRECIO_ENTRADA_EUR_MTOK: ${PRECIO_ENTRADA_EUR_MTOK:-}
+      PRECIO_SALIDA_EUR_MTOK: ${PRECIO_SALIDA_EUR_MTOK:-}
+    restart: unless-stopped
+
 volumes:
   db-storage:
   n8n-data:

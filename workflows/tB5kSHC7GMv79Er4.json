@@ -1,0 +1,1053 @@
+{
+  "updatedAt": "2026-11-18T16:30:12.416Z",
+  "createdAt": "2026-11-18T15:54:28.318Z",
+  "id": "tB5kSHC7GMv79Er4",
+  "name": "Facturas por correo",
+  "description": "Recibe facturas en el alias +facturas, las manda al extractor y las guarda en la hoja facturas-practica según el estado devuelto.",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const salida = [];\nfor (const item of $input.all()) {\n  const mensajeId = item.json.id;\n  const binaryKeys = Object.keys(item.binary || {});\n  for (const key of binaryKeys) {\n    const meta = item.binary[key];\n    salida.push({\n      json: {\n        nombre_archivo: meta.fileName,\n        tipo_mime: meta.mimeType,\n        mensaje_id: mensajeId,\n      },\n      binary: { archivo: meta },\n    });\n  }\n}\nreturn salida;"
+      },
+      "id": "fbedba6b-a29c-4a4e-bff9-51c407b2f537",
+      "name": "Separar adjuntos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "or",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.tipo_mime }}",
+              "rightValue": "application/pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.tipo_mime }}",
+              "rightValue": "image/",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9ca6af9c-71e9-444c-95d1-493b3b2f75c1",
+      "name": "¿Es PDF o imagen?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        528,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://extractor:8000/extraer",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "archivo",
+              "inputDataFieldName": "archivo"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "d02c7074-c155-44b2-9e5d-fc7dd379d8a9",
+      "name": "Extraer datos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        784,
+        -96
+      ],
+      "retryOnFail": true,
+      "maxTries": 3
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "fecha_proceso",
+              "type": "string",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}"
+            },
+            {
+              "id": "2",
+              "name": "archivo",
+              "type": "string",
+              "value": "={{ $('Separar adjuntos').item.json.nombre_archivo }}"
+            },
+            {
+              "id": "3",
+              "name": "enlace_correo",
+              "type": "string",
+              "value": "={{ 'https://mail.google.com/mail/u/0/#all/' + $('Separar adjuntos').item.json.mensaje_id }}"
+            },
+            {
+              "id": "4",
+              "name": "clave",
+              "type": "string",
+              "value": "={{ $json.factura && $json.factura.proveedor && $json.factura.numero ? ($json.factura.proveedor.trim().toLowerCase() + '|' + $json.factura.numero.trim().toLowerCase()) : '' }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "4eb11cc3-5e16-4298-b056-96df1ac7b71e",
+      "name": "Preparar datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1040,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1a2ZkS9tfL7DMRgn4ugnet8PBZM18L_M6nsADsFEW8xM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1358762702",
+          "cachedResultName": "Registro"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha_proceso": "={{ $('Preparar datos').item.json.fecha_proceso }}",
+            "archivo": "={{ $('Preparar datos').item.json.archivo }}",
+            "tipo_documento": "={{ $('Preparar datos').item.json.tipo_documento }}",
+            "camino": "={{ $('Preparar datos').item.json.camino }}",
+            "estado": "={{ $('Preparar datos').item.json.estado }}",
+            "tokens_entrada": "={{ $('Preparar datos').item.json.tokens_entrada }}",
+            "tokens_salida": "={{ $('Preparar datos').item.json.tokens_salida }}",
+            "coste_eur": "={{ $('Preparar datos').item.json.coste_eur }}",
+            "ms": "={{ $('Preparar datos').item.json.ms }}"
+          },
+          "schema": [
+            {
+              "id": "fecha_proceso",
+              "displayName": "fecha_proceso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "archivo",
+              "displayName": "archivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "tipo_documento",
+              "displayName": "tipo_documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "camino",
+              "displayName": "camino",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "tokens_entrada",
+              "displayName": "tokens_entrada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "tokens_salida",
+              "displayName": "tokens_salida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "coste_eur",
+              "displayName": "coste_eur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ms",
+              "displayName": "ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1641b7d5-bbd0-4ffa-8d79-787340f6a43c",
+      "name": "Registrar",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1296,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1a2ZkS9tfL7DMRgn4ugnet8PBZM18L_M6nsADsFEW8xM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultName": "Facturas"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "clave",
+              "lookupValue": "={{ $('Preparar datos').item.json.clave }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9ecd40cc-02fc-4539-b899-739f5638708f",
+      "name": "Buscar duplicado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1296,
+        -96
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.clave }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c6d8440b-c9a2-44fe-978a-d8f1f414da18",
+      "name": "¿Duplicada?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1568,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1a2ZkS9tfL7DMRgn4ugnet8PBZM18L_M6nsADsFEW8xM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "441511406",
+          "cachedResultName": "Rechazados"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha_proceso": "={{ $('Preparar datos').item.json.fecha_proceso }}",
+            "archivo": "={{ $('Preparar datos').item.json.archivo }}",
+            "motivo": "={{ $('Buscar duplicado').item.json.clave ? 'Duplicada de una factura ya registrada' : $('Preparar datos').item.json.motivos.join(', ') }}",
+            "enlace_correo": "={{ $('Preparar datos').item.json.enlace_correo }}"
+          },
+          "schema": [
+            {
+              "id": "fecha_proceso",
+              "displayName": "fecha_proceso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "archivo",
+              "displayName": "archivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "enlace_correo",
+              "displayName": "enlace_correo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f43f0ae3-663c-4438-b944-4537b656a5e7",
+      "name": "Guardar en Rechazados",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1824,
+        96
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Preparar datos').item.json.estado }}",
+                    "rightValue": "aprobado",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Preparar datos').item.json.estado }}",
+                    "rightValue": "revision",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Preparar datos').item.json.estado }}",
+                    "rightValue": "rechazado",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ae464d95-54ad-4b1c-9e65-21b420e470ce",
+      "name": "Repartir por estado",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        1824,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1a2ZkS9tfL7DMRgn4ugnet8PBZM18L_M6nsADsFEW8xM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultName": "Facturas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "clave"
+          ],
+          "value": {
+            "clave": "={{ $('Preparar datos').item.json.clave }}",
+            "fecha_proceso": "={{ $('Preparar datos').item.json.fecha_proceso }}",
+            "proveedor": "={{ $('Preparar datos').item.json.factura.proveedor }}",
+            "nif_proveedor": "={{ $('Preparar datos').item.json.factura.nif_proveedor }}",
+            "numero": "={{ $('Preparar datos').item.json.factura.numero }}",
+            "fecha_factura": "={{ $('Preparar datos').item.json.factura.fecha }}",
+            "base": "={{ $('Preparar datos').item.json.factura.desglose_iva.reduce((s, l) => s + Number(l.base), 0) }}",
+            "iva": "={{ $('Preparar datos').item.json.factura.desglose_iva.reduce((s, l) => s + Number(l.cuota), 0) }}",
+            "retencion": "={{ $('Preparar datos').item.json.factura.retencion_irpf }}",
+            "total": "={{ $('Preparar datos').item.json.factura.total }}",
+            "archivo": "={{ $('Preparar datos').item.json.archivo }}",
+            "enlace_correo": "={{ $('Preparar datos').item.json.enlace_correo }}"
+          },
+          "schema": [
+            {
+              "id": "clave",
+              "displayName": "clave",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_proceso",
+              "displayName": "fecha_proceso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "proveedor",
+              "displayName": "proveedor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "nif_proveedor",
+              "displayName": "nif_proveedor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "numero",
+              "displayName": "numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "fecha_factura",
+              "displayName": "fecha_factura",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "base",
+              "displayName": "base",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "iva",
+              "displayName": "iva",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "retencion",
+              "displayName": "retencion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "archivo",
+              "displayName": "archivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "enlace_correo",
+              "displayName": "enlace_correo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7c78b7a9-5cdf-4f89-b566-c410338115c7",
+      "name": "Guardar en Facturas",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2080,
+        -304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1a2ZkS9tfL7DMRgn4ugnet8PBZM18L_M6nsADsFEW8xM"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1361692996",
+          "cachedResultName": "Revision"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha_proceso": "={{ $('Preparar datos').item.json.fecha_proceso }}",
+            "archivo": "={{ $('Preparar datos').item.json.archivo }}",
+            "proveedor": "={{ $('Preparar datos').item.json.factura.proveedor }}",
+            "numero": "={{ $('Preparar datos').item.json.factura.numero }}",
+            "total": "={{ $('Preparar datos').item.json.factura.total }}",
+            "motivos": "={{ $('Preparar datos').item.json.motivos.join(', ') }}",
+            "enlace_correo": "={{ $('Preparar datos').item.json.enlace_correo }}"
+          },
+          "schema": [
+            {
+              "id": "fecha_proceso",
+              "displayName": "fecha_proceso",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "archivo",
+              "displayName": "archivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "proveedor",
+              "displayName": "proveedor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "numero",
+              "displayName": "numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "motivos",
+              "displayName": "motivos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "enlace_correo",
+              "displayName": "enlace_correo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c7bb2265-94ff-4a42-b2fa-49e8838eff8f",
+      "name": "Guardar en Revision",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2080,
+        -96
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "enviosmspython@gmail.com",
+        "subject": "={{ 'Factura en revisión: ' + $('Preparar datos').item.json.archivo }}",
+        "emailType": "text",
+        "message": "={{ 'Motivos: ' + $('Preparar datos').item.json.motivos.join(', ') + '\\n\\nEnlace al correo: ' + $('Preparar datos').item.json.enlace_correo }}",
+        "options": {}
+      },
+      "id": "5b0982ee-78fc-429a-bf9e-bbe29c1e7ceb",
+      "name": "Avisar de revisión",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2336,
+        -96
+      ],
+      "webhookId": "368c1cdc-7f8a-4537-bd32-79f45b1a0f66",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QBEJlhOcZeKSdI8z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "to:enviosmspython+facturas@gmail.com has:attachment",
+          "readStatus": "both"
+        },
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "attachment_",
+          "downloadAttachments": true
+        }
+      },
+      "id": "1055418f-3061-4152-8cdd-b8a1a2e30d18",
+      "name": "Correo de facturas",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QBEJlhOcZeKSdI8z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "8df2efe0-2db4-4972-b05f-87a0d15a91dd",
+      "name": "Procesar de uno en uno",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1056,
+        -304
+      ]
+    }
+  ],
+  "connections": {
+    "Separar adjuntos": {
+      "main": [
+        [
+          {
+            "node": "¿Es PDF o imagen?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es PDF o imagen?": {
+      "main": [
+        [
+          {
+            "node": "Extraer datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer datos": {
+      "main": [
+        [
+          {
+            "node": "Preparar datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar datos": {
+      "main": [
+        [
+          {
+            "node": "Registrar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Procesar de uno en uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar duplicado": {
+      "main": [
+        [
+          {
+            "node": "¿Duplicada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Duplicada?": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Rechazados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Repartir por estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Repartir por estado": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Facturas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guardar en Revision",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guardar en Rechazados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Revision": {
+      "main": [
+        [
+          {
+            "node": "Avisar de revisión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Correo de facturas": {
+      "main": [
+        [
+          {
+            "node": "Separar adjuntos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar de uno en uno": {
+      "main": [
+        null,
+        [
+          {
+            "node": "Buscar duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Facturas": {
+      "main": [
+        [
+          {
+            "node": "Procesar de uno en uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar de revisión": {
+      "main": [
+        [
+          {
+            "node": "Procesar de uno en uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Rechazados": {
+      "main": [
+        [
+          {
+            "node": "Procesar de uno en uno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Correo de facturas": {
+      "Correo de facturas": {
+        "lastTimeChecked": 1795017867
+      }
+    }
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "967117e2-c795-4e76-a6d3-91821e830bd1",
+  "activeVersionId": "967117e2-c795-4e76-a6d3-91821e830bd1",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-18T15:54:28.318Z",
+      "createdAt": "2026-11-18T15:54:28.318Z",
+      "role": "workflow:owner",
+      "workflowId": "tB5kSHC7GMv79Er4",
+      "projectId": "jxVjeRIK2XrqFfqu",
+      "project": {
+        "updatedAt": "2026-11-12T10:10:14.659Z",
+        "createdAt": "2026-11-12T10:04:03.395Z",
+        "id": "jxVjeRIK2XrqFfqu",
+        "name": "Gari Garcia Castellanos <garigarciacastellanos@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "75861a3d-6e3e-4b02-aaa0-a43801c39ecd"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 967117e2",
+    "description": ""
+  }
+}

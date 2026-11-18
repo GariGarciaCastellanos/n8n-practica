@@ -1,10 +1,10 @@
 # Tratamiento de datos personales
 
 Este documento describe, en lenguaje sencillo, qué datos personales trata el
-módulo de leads y facturas (PLAN-LEADS.md) y con qué fin. **No es
-asesoramiento legal.** Es solo un resumen para que un profesional (abogado o
-delegado de protección de datos) revise lo que falta antes de usar este
-sistema con datos reales.
+módulo de leads y facturas (PLAN-LEADS.md) y el módulo de documentos
+(PLAN-DOCUMENTOS.md), y con qué fin. **No es asesoramiento legal.** Es solo
+un resumen para que un profesional (abogado o delegado de protección de
+datos) revise lo que falta antes de usar este sistema con datos reales.
 
 En las pruebas de este proyecto nunca se usan datos reales de clientes: los
 leads de prueba usan nombres inventados y los correos son siempre alias del
@@ -65,3 +65,56 @@ formación legal debería revisar al menos:
 - **Comunicaciones comerciales**: que el correo de acuse y cualquier aviso
   posterior cumplan la normativa aplicable (por ejemplo, LSSI en España) si
   se usan con fines comerciales.
+
+## Facturas de proveedores (módulo de documentos, PLAN-DOCUMENTOS.md)
+
+En las pruebas de este módulo nunca se usan facturas ni datos reales: los
+documentos de `datos-prueba/` están inventados (empresas, NIF y direcciones
+ficticios, sin personas reales).
+
+### Qué datos personales se tratan
+
+La factura de un proveedor que es **autónomo** (una persona física, no una
+sociedad) contiene datos personales suyos: su **nombre** y su **NIF**, y su
+dirección si aparece en el documento. Cuando el proveedor es una sociedad
+(S.L., S.A...), su CIF y su razón social no se consideran datos personales
+por sí mismos.
+
+### Con qué finalidad
+
+Registrar y comprobar automáticamente las facturas recibidas de proveedores,
+para facilitar la contabilidad: extraer los datos, comprobar que son
+correctos (NIF válido, cuentas cuadradas, dentro del importe máximo...) y
+dejar solo los casos dudosos para que una persona los revise.
+
+### Con qué servicios se comparten
+
+- **Google** (Gmail y Google Sheets): el correo con la factura adjunta se
+  recibe por Gmail, y los datos ya extraídos se guardan en una hoja de
+  cálculo.
+- **Anthropic**: el contenido del documento (su texto, o la imagen de la
+  página si es un escaneado o una foto) se envía a la API de Claude para
+  extraer los datos de la factura.
+
+### El servicio no guarda los documentos
+
+El servicio extractor no escribe los documentos en disco ni los guarda en
+ningún sitio: los recibe, los procesa en memoria y devuelve el resultado.
+Tampoco escribe el contenido de los documentos en sus registros (logs).
+
+### Cuánto tiempo se conservan
+
+Este proyecto de práctica no implementa ningún borrado automático. Los
+plazos de conservación de las facturas los fija la normativa (mercantil,
+contable y fiscal), no este sistema: antes de usar esto con facturas reales,
+el gestor o asesor fiscal debe confirmar cuánto tiempo hay que conservarlas y
+cómo.
+
+### Qué debe revisar un profesional
+
+Como con los leads, antes de usar este sistema con facturas reales una
+persona con formación legal y el gestor o asesor fiscal deberían revisar al
+menos la base legal del tratamiento, el contrato de encargado de tratamiento
+con Google y con Anthropic, y los plazos de conservación exigidos por la
+normativa aplicable. Como con el resto de este documento, esto no es
+asesoramiento legal.

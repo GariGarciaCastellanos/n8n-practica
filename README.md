@@ -14,6 +14,8 @@ Servicios de Docker:
 - **n8n**: motor de automatización (http://localhost:5678).
 - **validador**: servicio en Python que valida nombre, email, teléfono y
   mensaje (http://localhost:8000).
+- **extractor**: servicio en Python que extrae datos de facturas con la API
+  de Claude (http://localhost:8001).
 - **cloudflared**: túnel para exponer el webhook a Internet (opcional,
   perfil `tunnel`).
 
@@ -101,3 +103,65 @@ en vez de `ok`. El flujo "Reintentos de Pipedrive" revisa esa columna cada 15
 minutos y reintenta el envío al CRM de los leads pendientes, hasta que se
 marcan como `ok`. No hace falta intervención manual salvo que el fallo sea
 persistente.
+
+## Facturas por correo
+
+Este es el módulo de práctica de documentos (PLAN-DOCUMENTOS.md): un sistema
+que recibe facturas de proveedores por correo, extrae sus datos con la API de
+Claude y solo pasa a una persona lo dudoso ("el modelo propone y el código
+comprueba").
+
+- **extractor**: servicio en Python (FastAPI) que recibe un PDF o una imagen
+  (`POST /extraer`), detecta si tiene texto o hay que usar visión, extrae los
+  datos con Claude y los valida con código antes de decidir el estado. También
+  tiene `POST /extraer-pedido`, que saca los datos de un pedido escrito en el
+  cuerpo de un correo (Parte 6, opcional).
+- **Facturas por correo**: flujo de n8n que vigila
+  `<tu correo>+facturas@gmail.com`, manda cada archivo adjunto al extractor,
+  comprueba si ya existe esa factura (por proveedor + número) y guarda el
+  resultado en la pestaña correspondiente de la hoja `facturas-practica`
+  (Facturas, Revision o Rechazados), avisando por correo si hace falta
+  revisión. Cada documento procesado queda siempre anotado en la pestaña
+  Registro, aunque se rechace o sea un duplicado.
+
+### Los tres estados
+
+- **aprobado**: la factura pasó todas las comprobaciones automáticas (campos
+  completos, NIF válido, cuentas cuadradas, importe dentro del máximo...). Se
+  guarda directamente en la pestaña Facturas, sin que nadie tenga que mirarla.
+- **revision**: algo no cuadra o no se ha podido comprobar (falta un dato, el
+  NIF no es válido, el total no coincide con el desglose, el documento supera
+  el máximo automático...). Se guarda en Revision con los motivos exactos y se
+  avisa por correo para que una persona lo revise. Nunca se aprueba algo solo
+  porque "parezca" correcto.
+- **rechazado**: el documento no es una factura (un presupuesto, un
+  albarán...) o es un duplicado de una factura ya registrada. Se guarda en
+  Rechazados con el motivo.
+
+### Cómo se prueba
+
+1. Arrancar el extractor (necesita `ANTHROPIC_API_KEY` en `.env`):
+
+   ```bash
+   docker compose up -d extractor
+   ```
+
+2. Evaluación automática contra los 25 documentos inventados de
+   `datos-prueba/`:
+
+   ```bash
+   ./evaluar.sh
+   ```
+
+   Genera `docs/informe.md` con el acierto por campo, la tasa de aprobación
+   automática, los falsos aprobados (deben ser siempre 0) y el coste. Para
+   probar con otro modelo sin tocar `.env`:
+   `MODELO_IA=claude-sonnet-5-5 ./evaluar.sh`.
+
+3. Prueba de extremo a extremo: con el flujo "Facturas por correo" publicado,
+   se envía un correo a `<tu correo>+facturas@gmail.com` con alguno de los
+   archivos de `datos-prueba/` adjuntos, y se revisa en qué pestaña de la hoja
+   ha caído y la ejecución correspondiente en n8n.
+
+Los documentos de prueba (carpeta `datos-prueba/`) son siempre inventados;
+nunca se usan facturas ni datos reales.
