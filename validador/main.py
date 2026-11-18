@@ -68,3 +68,62 @@ def validar(entrada: ValidarEntrada):
         telefono=telefono,
         mensaje=mensaje,
     )
+
+
+class NormalizarEntrada(BaseModel):
+    nombre: Optional[str] = None
+    email: Optional[str] = None
+    telefono: Optional[str] = None
+    servicio: Optional[str] = None
+    mensaje: Optional[str] = None
+
+
+class NormalizarSalida(BaseModel):
+    valido: bool
+    errores: List[str]
+    nombre: str
+    email: str
+    telefono: Optional[str]
+    servicio: str
+    mensaje: str
+
+
+@app.post("/normalizar", response_model=NormalizarSalida)
+def normalizar(entrada: NormalizarEntrada):
+    errores: List[str] = []
+
+    nombre = (entrada.nombre or "").strip()
+    email = (entrada.email or "").strip().lower()
+    servicio = (entrada.servicio or "").strip().lower()
+    mensaje = (entrada.mensaje or "").strip()
+    telefono = entrada.telefono
+
+    if not nombre:
+        errores.append("Falta el nombre")
+
+    if not email:
+        errores.append("Falta el email")
+    elif not EMAIL_RE.match(email):
+        errores.append("El email no tiene un formato válido")
+
+    if telefono:
+        try:
+            numero = phonenumbers.parse(telefono, "ES")
+            if phonenumbers.is_valid_number(numero):
+                telefono = phonenumbers.format_number(
+                    numero, phonenumbers.PhoneNumberFormat.E164
+                )
+            else:
+                errores.append("El teléfono no es válido")
+        except phonenumbers.NumberParseException:
+            errores.append("El teléfono no es válido")
+
+    return NormalizarSalida(
+        valido=len(errores) == 0,
+        errores=errores,
+        nombre=nombre,
+        email=email,
+        telefono=telefono,
+        servicio=servicio,
+        mensaje=mensaje,
+    )

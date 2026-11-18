@@ -19,3 +19,11 @@ Soy principiante absoluto con n8n, Docker, Postgres y Cloudflare. Trabajo en Win
 ## Nombres
 - Los servicios de Docker se llaman: postgres, n8n, validador y cloudflared.
 - Los flujos y nodos de n8n se llaman exactamente como en PLAN.md.
+
+## Módulo 4: leads y facturas
+- Para este trabajo usa PLAN-LEADS.md. Cuando te pida una "Parte", haz esa parte entera y nada más.
+- Los emails de prueba de los leads son siempre alias de mi correo (por ejemplo, nombre+laura@gmail.com). Nunca escribas a direcciones de terceros.
+- No pongas claves de Pipedrive, Airtable ni Anthropic en flujos ni en archivos que vayan a Git. Las claves van en credenciales de n8n o en .env, que no puedes leer.
+- Los flujos nuevos se crean sin publicar. Publicar lo hago yo.
+- Los datos de los leads son datos personales: en las pruebas usa solo datos inventados.
+- Las facturas no se emiten desde n8n ni desde código propio: solo recordatorios y avisos sobre datos de una hoja.

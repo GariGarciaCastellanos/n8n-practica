@@ -1,0 +1,301 @@
+{
+  "updatedAt": "2026-11-18T11:59:35.609Z",
+  "createdAt": "2026-11-18T11:59:35.609Z",
+  "id": "wWaOHX4B8MvjVQTo",
+  "name": "Seguimiento de leads",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "fe95c988-11f8-4b5c-91d9-e1d62c120213",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -608,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "e21b5ed4-54d3-421b-aebd-26610441ffba",
+      "name": "Configuración",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -384,
+        0
+      ],
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "umbral_minutos",
+              "value": 120,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "e81cb82e-2d67-4e50-8aa8-f91240e09bec",
+      "name": "Buscar sin atender",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "estado",
+              "lookupValue": "nuevo"
+            }
+          ]
+        },
+        "combineFilters": "AND",
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "c27b5e23-e63b-44de-a23b-6fb473c60f3c",
+      "name": "Filtrar antiguos",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        64,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.recordatorio }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            },
+            {
+              "leftValue": "={{ $now.diff(DateTime.fromFormat($json.fecha, 'yyyy-MM-dd HH:mm'), 'minutes').minutes > $('Configuración').item.json.umbral_minutos }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "6f9f1c40-5e5a-42c4-93bc-2ba983808613",
+      "name": "Avisar de lead sin atender",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "enviosmspython@gmail.com",
+        "subject": "={{ \"Lead sin atender: \" + $json.nombre }}",
+        "message": "={{ \"Hola,\\n\\nEste lead lleva tiempo sin atender:\\nNombre: \" + $json.nombre + \"\\nEmail: \" + $json.email + \"\\nTeléfono: \" + $json.telefono + \"\\nServicio: \" + $json.servicio + \"\\nSin atender desde hace \" + Math.floor($now.diff(DateTime.fromFormat($json.fecha, 'yyyy-MM-dd HH:mm'), 'minutes').minutes) + \" minutos.\" }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "01c596c5-022b-4cc2-ace2-2f0261676fd0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QBEJlhOcZeKSdI8z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "id": "fedc8fa5-4172-4b2b-a315-62971544533f",
+      "name": "Marcar recordatorio",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "email"
+          ],
+          "value": {
+            "email": "={{ $('Buscar sin atender').item.json.email }}",
+            "recordatorio": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}"
+          },
+          "schema": []
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Configuración",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuración": {
+      "main": [
+        [
+          {
+            "node": "Buscar sin atender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar sin atender": {
+      "main": [
+        [
+          {
+            "node": "Filtrar antiguos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar antiguos": {
+      "main": [
+        [
+          {
+            "node": "Avisar de lead sin atender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar de lead sin atender": {
+      "main": [
+        [
+          {
+            "node": "Marcar recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "1005fef0-ca5c-494d-9479-466a07761b63",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-18T11:59:35.609Z",
+      "createdAt": "2026-11-18T11:59:35.609Z",
+      "role": "workflow:owner",
+      "workflowId": "wWaOHX4B8MvjVQTo",
+      "projectId": "jxVjeRIK2XrqFfqu",
+      "project": {
+        "updatedAt": "2026-11-12T10:10:14.659Z",
+        "createdAt": "2026-11-12T10:04:03.395Z",
+        "id": "jxVjeRIK2XrqFfqu",
+        "name": "Gari Garcia Castellanos <garigarciacastellanos@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "75861a3d-6e3e-4b02-aaa0-a43801c39ecd"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Primera versión",
+    "description": "Flujo que cada hora revisa leads con estado=nuevo en la hoja Leads, avisa por correo de los que llevan más de 120 minutos sin atender y sin recordatorio previo, y marca la fecha del recordatorio. Credenciales de Google y Gmail sin asignar."
+  }
+}

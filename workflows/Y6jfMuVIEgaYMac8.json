@@ -1,0 +1,255 @@
+{
+  "updatedAt": "2026-11-18T11:28:10.255Z",
+  "createdAt": "2026-11-18T10:22:25.451Z",
+  "id": "Y6jfMuVIEgaYMac8",
+  "name": "Reintentos de Pipedrive",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "7f83f2c6-9f35-4216-9648-152e79d20b4e",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "402f5c35-9c45-460a-8ad1-89721c66d0da",
+      "name": "Buscar pendientes",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -176,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "estado_crm",
+              "lookupValue": "pendiente"
+            }
+          ]
+        },
+        "combineFilters": "AND",
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "35968bbd-b858-40ad-a80c-777af4267159",
+      "name": "Limitar a 20",
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        48,
+        0
+      ],
+      "parameters": {
+        "maxItems": 20,
+        "keep": "firstItems"
+      }
+    },
+    {
+      "id": "0025a400-ebea-4771-b142-e1a99634c752",
+      "name": "Enviar a Pipedrive",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        272,
+        0
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "CckcnBJWWyJG7jWB",
+          "cachedResultName": "Enviar lead a Pipedrive"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $json.nombre }}",
+            "email": "={{ $json.email }}",
+            "telefono": "={{ $json.telefono }}",
+            "servicio": "={{ $json.servicio }}",
+            "mensaje": "={{ $json.mensaje }}"
+          }
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "d76f3d15-d955-4363-912f-83ebbaff333f",
+      "name": "Marcar CRM como hecho",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        496,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "email"
+          ],
+          "value": {
+            "email": "={{ $('Limitar a 20').item.json.email }}",
+            "estado_crm": "ok"
+          },
+          "schema": []
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar pendientes": {
+      "main": [
+        [
+          {
+            "node": "Limitar a 20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limitar a 20": {
+      "main": [
+        [
+          {
+            "node": "Enviar a Pipedrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar a Pipedrive": {
+      "main": [
+        [
+          {
+            "node": "Marcar CRM como hecho",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "72505a91-2d81-4819-82b6-1040ba81364f",
+  "activeVersionId": "72505a91-2d81-4819-82b6-1040ba81364f",
+  "versionCounter": 2,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-18T10:22:25.451Z",
+      "createdAt": "2026-11-18T10:22:25.451Z",
+      "role": "workflow:owner",
+      "workflowId": "Y6jfMuVIEgaYMac8",
+      "projectId": "jxVjeRIK2XrqFfqu",
+      "project": {
+        "updatedAt": "2026-11-12T10:10:14.659Z",
+        "createdAt": "2026-11-12T10:04:03.395Z",
+        "id": "jxVjeRIK2XrqFfqu",
+        "name": "Gari Garcia Castellanos <garigarciacastellanos@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "75861a3d-6e3e-4b02-aaa0-a43801c39ecd"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Primera versión",
+    "description": "Flujo que cada 15 minutos busca leads con estado_crm=pendiente en la hoja Leads, los reenvía al sub-flujo \"Enviar lead a Pipedrive\" y marca el CRM como hecho en los que tienen éxito. Credenciales de Google sin asignar."
+  }
+}

@@ -4,7 +4,7 @@
   "id": "4bLruDomJDG40YPo",
   "name": "Aviso de errores",
   "description": "Avisa por correo cuando falla el flujo Formulario de contacto.",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -69,7 +69,7 @@
   "nodeGroups": [],
   "pinData": null,
   "versionId": "e405e33b-8be9-4236-93c6-456e3809e4e7",
-  "activeVersionId": null,
+  "activeVersionId": "e405e33b-8be9-4236-93c6-456e3809e4e7",
   "versionCounter": 1,
   "triggerCount": 0,
   "sourceWorkflowId": null,

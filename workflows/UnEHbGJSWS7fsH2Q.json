@@ -1,0 +1,742 @@
+{
+  "updatedAt": "2026-11-18T09:30:13.000Z",
+  "createdAt": "2026-11-18T09:16:09.756Z",
+  "id": "UnEHbGJSWS7fsH2Q",
+  "name": "Captación de leads",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "captacion-leads",
+        "options": {}
+      },
+      "id": "6c1e11e3-bebc-4fa5-ab2c-db691d7c1dac",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        0
+      ],
+      "webhookId": "8b7c4bd4-7877-4b52-83f7-ff0cf3729ee1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://validador:8000/normalizar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.body) }}",
+        "options": {}
+      },
+      "id": "86784c29-4e5c-4656-96a4-9cb3d8dad717",
+      "name": "Normalizar datos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.valido }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f5ffdf3e-6812-4ce1-8d43-311b083cd7e0",
+      "name": "¿Es válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        48,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "fecha",
+              "type": "string",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}"
+            },
+            {
+              "id": "f2",
+              "name": "nombre",
+              "type": "string",
+              "value": "={{ $json.nombre }}"
+            },
+            {
+              "id": "f3",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $json.email }}"
+            },
+            {
+              "id": "f4",
+              "name": "telefono",
+              "type": "string",
+              "value": "={{ $json.telefono }}"
+            },
+            {
+              "id": "f5",
+              "name": "servicio",
+              "type": "string",
+              "value": "={{ $json.servicio }}"
+            },
+            {
+              "id": "f6",
+              "name": "mensaje",
+              "type": "string",
+              "value": "={{ $json.mensaje }}"
+            },
+            {
+              "id": "f7",
+              "name": "origen",
+              "type": "string",
+              "value": "formulario web"
+            },
+            {
+              "id": "f8",
+              "name": "estado",
+              "type": "string",
+              "value": "nuevo"
+            },
+            {
+              "id": "f9",
+              "name": "estado_crm",
+              "type": "string",
+              "value": "pendiente"
+            },
+            {
+              "id": "f10",
+              "name": "recordatorio",
+              "type": "string",
+              "value": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d7ae71a4-1398-4f74-ae0b-c084156123d6",
+      "name": "Preparar fila",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        -160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $json.fecha }}",
+            "nombre": "={{ $json.nombre }}",
+            "email": "={{ $json.email }}",
+            "telefono": "={{ $json.telefono }}",
+            "servicio": "={{ $json.servicio }}",
+            "mensaje": "={{ $json.mensaje }}",
+            "origen": "={{ $json.origen }}",
+            "estado": "={{ $json.estado }}",
+            "estado_crm": "={{ $json.estado_crm }}",
+            "recordatorio": "={{ $json.recordatorio }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "servicio",
+              "displayName": "servicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensaje",
+              "displayName": "mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "origen",
+              "displayName": "origen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado_crm",
+              "displayName": "estado_crm",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recordatorio",
+              "displayName": "recordatorio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f3f6a0f4-2afa-4bf2-8572-3d8560bb5709",
+      "name": "Guardar en Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        496,
+        -160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Preparar fila').item.json.email }}",
+        "subject": "Hemos recibido tu solicitud",
+        "message": "=Hola {{ $('Preparar fila').item.json.nombre }}, hemos recibido tu solicitud sobre {{ $('Preparar fila').item.json.servicio }}. Te contactaremos lo antes posible. Si no la enviaste tú, ignora este mensaje.",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "1385da96-ff32-4a20-8467-d2bd2b147b11",
+      "name": "Acuse al lead",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        -160
+      ],
+      "webhookId": "9812825e-be70-4a74-af14-fd6126cbe861",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QBEJlhOcZeKSdI8z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "enviosmspython@gmail.com",
+        "subject": "=Nuevo lead: {{ $('Preparar fila').item.json.nombre }} · {{ $('Preparar fila').item.json.servicio }}",
+        "message": "=Nombre: {{ $('Preparar fila').item.json.nombre }}\nEmail: {{ $('Preparar fila').item.json.email }}\nTeléfono: {{ $('Preparar fila').item.json.telefono }}\nServicio: {{ $('Preparar fila').item.json.servicio }}\nMensaje: {{ $('Preparar fila').item.json.mensaje }}\nFecha: {{ $('Preparar fila').item.json.fecha }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "5cac7f03-00f4-4dc4-87ac-0c481b195534",
+      "name": "Aviso al equipo",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        -160
+      ],
+      "webhookId": "1149ea94-5427-4d9e-9edd-3eade6eaa0b9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QBEJlhOcZeKSdI8z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "CckcnBJWWyJG7jWB",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/CckcnBJWWyJG7jWB",
+          "cachedResultName": "Enviar lead a Pipedrive"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $('Preparar fila').item.json.nombre }}",
+            "email": "={{ $('Preparar fila').item.json.email }}",
+            "telefono": "={{ $('Preparar fila').item.json.telefono }}",
+            "servicio": "={{ $('Preparar fila').item.json.servicio }}",
+            "mensaje": "={{ $('Preparar fila').item.json.mensaje }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "servicio",
+              "displayName": "servicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "mensaje",
+              "displayName": "mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "resumen",
+              "displayName": "resumen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "id": "4eb787ab-37d4-4236-987f-c89d31cfc035",
+      "name": "Enviar a Pipedrive",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1168,
+        -160
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Leads"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "email"
+          ],
+          "value": {
+            "email": "={{ $('Preparar fila').item.json.email }}",
+            "estado_crm": "ok"
+          },
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "39768143-19f2-4784-bfd0-a43a7d187c44",
+      "name": "Marcar CRM como hecho",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1392,
+        -160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Errores"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+            "nombre": "={{ $json.nombre }}",
+            "email": "={{ $json.email }}",
+            "telefono": "={{ $json.telefono }}",
+            "servicio": "={{ $json.servicio }}",
+            "mensaje": "={{ $json.mensaje }}",
+            "origen": "formulario web",
+            "motivo": "={{ $json.errores.join('; ') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "servicio",
+              "displayName": "servicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensaje",
+              "displayName": "mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "origen",
+              "displayName": "origen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "motivo",
+              "displayName": "motivo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "caa365bc-d0c7-4226-8d81-b70460f5da7f",
+      "name": "Guardar en Errores",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        272,
+        160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalizar datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar datos": {
+      "main": [
+        [
+          {
+            "node": "¿Es válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es válido?": {
+      "main": [
+        [
+          {
+            "node": "Preparar fila",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guardar en Errores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar fila": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Leads": {
+      "main": [
+        [
+          {
+            "node": "Acuse al lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acuse al lead": {
+      "main": [
+        [
+          {
+            "node": "Aviso al equipo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aviso al equipo": {
+      "main": [
+        [
+          {
+            "node": "Enviar a Pipedrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar a Pipedrive": {
+      "main": [
+        [
+          {
+            "node": "Marcar CRM como hecho",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "c2aebfb6-b87e-4ddc-b126-875ae54465aa",
+  "activeVersionId": "c2aebfb6-b87e-4ddc-b126-875ae54465aa",
+  "versionCounter": 4,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-18T09:16:09.756Z",
+      "createdAt": "2026-11-18T09:16:09.756Z",
+      "role": "workflow:owner",
+      "workflowId": "UnEHbGJSWS7fsH2Q",
+      "projectId": "jxVjeRIK2XrqFfqu",
+      "project": {
+        "updatedAt": "2026-11-12T10:10:14.659Z",
+        "createdAt": "2026-11-12T10:04:03.395Z",
+        "id": "jxVjeRIK2XrqFfqu",
+        "name": "Gari Garcia Castellanos <garigarciacastellanos@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "75861a3d-6e3e-4b02-aaa0-a43801c39ecd"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

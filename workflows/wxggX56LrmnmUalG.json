@@ -1,0 +1,274 @@
+{
+  "updatedAt": "2026-11-18T13:40:04.894Z",
+  "createdAt": "2026-11-18T13:11:49.196Z",
+  "id": "wxggX56LrmnmUalG",
+  "name": "Recordatorio de facturas",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "6f06c900-139f-4f24-9b01-c620c134336e",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -608,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Facturas"
+        },
+        "options": {}
+      },
+      "id": "3c56e14e-9933-46b7-b959-a2a80f7ba45f",
+      "name": "Leer facturas",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -384,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.estado }}",
+              "rightValue": "pendiente",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.recordatorio }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            },
+            {
+              "leftValue": "={{ $json.vencimiento < $now.toFormat('yyyy-MM-dd') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bc71f116-7a6e-4033-ac5f-0a8d727153e2",
+      "name": "Filtrar vencidas",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        -160,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ \"Recordatorio de pago: factura \" + $json.numero }}",
+        "message": "={{ \"Hola \" + $json.cliente + \",\\n\\nTe escribimos para recordarte que la factura \" + $json.numero + \" por importe de \" + $json.importe + \" € venció el \" + $json.vencimiento + \" y sigue pendiente de pago.\\n\\nSi ya la has pagado, puedes ignorar este mensaje.\\n\\nUn saludo.\" }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "f5264ed1-9532-42d6-872d-dcd59779d5cd",
+      "name": "Enviar recordatorio",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        0
+      ],
+      "webhookId": "6d1fa40a-becd-4f6b-bcdf-e6caa596725b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QBEJlhOcZeKSdI8z",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "https://docs.google.com/spreadsheets/d/14N2cEjOGhLX7QY4b3iudDDUrZSji4RERbXlZYsiQ_H4/edit?gid=0#gid=0"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Facturas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "numero"
+          ],
+          "value": {
+            "numero": "={{ $('Filtrar vencidas').item.json.numero }}",
+            "recordatorio": "={{ $now.toFormat('yyyy-MM-dd') }}"
+          },
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "94d76b44-5a3c-40e8-87e7-e7d6d1c80e98",
+      "name": "Marcar recordatorio",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "BmmURdcBVgt3Cbj3",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Leer facturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer facturas": {
+      "main": [
+        [
+          {
+            "node": "Filtrar vencidas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar vencidas": {
+      "main": [
+        [
+          {
+            "node": "Enviar recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar recordatorio": {
+      "main": [
+        [
+          {
+            "node": "Marcar recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Europe/Madrid",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "75f16cd9-e4cf-4f7c-b69f-2e52655de073",
+  "activeVersionId": null,
+  "versionCounter": 11,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-18T13:11:49.196Z",
+      "createdAt": "2026-11-18T13:11:49.196Z",
+      "role": "workflow:owner",
+      "workflowId": "wxggX56LrmnmUalG",
+      "projectId": "jxVjeRIK2XrqFfqu",
+      "project": {
+        "updatedAt": "2026-11-12T10:10:14.659Z",
+        "createdAt": "2026-11-12T10:04:03.395Z",
+        "id": "jxVjeRIK2XrqFfqu",
+        "name": "Gari Garcia Castellanos <garigarciacastellanos@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "75861a3d-6e3e-4b02-aaa0-a43801c39ecd"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Updated Leer facturas",
+    "description": "Restaura Leer facturas a su configuracion original validada, tras confirmar que el problema real era que la hoja Facturas seguia vacia (sin filas de datos), no la configuracion del nodo."
+  }
+}

@@ -1,0 +1,361 @@
+{
+  "updatedAt": "2026-11-18T11:52:34.241Z",
+  "createdAt": "2026-11-17T20:24:56.992Z",
+  "id": "CckcnBJWWyJG7jWB",
+  "name": "Enviar lead a Pipedrive",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "nombre"
+            },
+            {
+              "name": "email"
+            },
+            {
+              "name": "telefono"
+            },
+            {
+              "name": "servicio"
+            },
+            {
+              "name": "mensaje"
+            },
+            {
+              "name": "resumen"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        -16
+      ],
+      "id": "3898a5cf-0614-4f7a-a098-e7f1cf9170a9",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "search",
+        "term": "={{ $json.email }}",
+        "exactMatch": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -16
+      ],
+      "id": "21b6b554-1c6e-4614-b783-bcdf3d89841e",
+      "name": "Buscar persona",
+      "alwaysOutputData": true,
+      "credentials": {
+        "pipedriveApi": {
+          "id": "lyd6lhgR4BayyLjC",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "87b4d7ea-cf5c-4ce1-9d21-48bbd5de9c62",
+              "leftValue": "={{ Boolean($json.id) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        544,
+        -16
+      ],
+      "id": "b3fe3d4f-1d67-4b99-a1aa-a301878c8f56",
+      "name": "¿Existe en Pipedrive?"
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "name": "={{ $('When Executed by Another Workflow').item.json.nombre }}",
+        "additionalFields": {
+          "emails": {
+            "emailProperties": [
+              {
+                "value": "={{ $('When Executed by Another Workflow').item.json.email }}"
+              }
+            ]
+          },
+          "phones": {
+            "phoneProperties": [
+              {
+                "value": "={{ $('When Executed by Another Workflow').item.json.telefono }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        720,
+        80
+      ],
+      "id": "53a09c6b-4fb5-46fd-985c-f760f496fba3",
+      "name": "Crear persona",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "lyd6lhgR4BayyLjC",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "deal",
+        "operation": "create",
+        "title": "=Lead web: {{ $('When Executed by Another Workflow').item.json.nombre }} · {{ $('When Executed by Another Workflow').item.json.servicio }}",
+        "associateWith": "person",
+        "person_id": "={{ $json.id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        896,
+        80
+      ],
+      "id": "41223a60-042c-41ac-9be6-d6c42781c2a8",
+      "name": "Crear negocio",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "lyd6lhgR4BayyLjC",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "note",
+        "content": "={{ \"Servicio: \" + $('When Executed by Another Workflow').item.json.servicio + \"\\nMensaje: \" + $('When Executed by Another Workflow').item.json.mensaje + \"\\nTeléfono: \" + $('When Executed by Another Workflow').item.json.telefono + \"\\nOrigen: formulario web\" + ($('When Executed by Another Workflow').item.json.resumen ? (\"\\nResumen: \" + $('When Executed by Another Workflow').item.json.resumen) : \"\") }}",
+        "additionalFields": {
+          "deal_id": "={{ $json.id }}",
+          "person_id": "={{ $('Crear persona').item.json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        80
+      ],
+      "id": "f2e9e70c-d8ae-4bef-bff7-358681645cec",
+      "name": "Crear nota",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "lyd6lhgR4BayyLjC",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "id": "30e41d8b-b68d-4c16-b808-9887d7b2d79c",
+      "name": "Actualizar persona",
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        720,
+        -160
+      ],
+      "parameters": {
+        "resource": "person",
+        "operation": "update",
+        "personId": "={{ $json.id }}",
+        "updateFields": {
+          "name": "={{ $('When Executed by Another Workflow').item.json.nombre }}",
+          "phones": {
+            "phoneProperties": [
+              {
+                "value": "={{ $('When Executed by Another Workflow').item.json.telefono }}"
+              }
+            ]
+          }
+        }
+      },
+      "credentials": {
+        "pipedriveApi": {
+          "id": "lyd6lhgR4BayyLjC",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "id": "2cb966a5-b013-4fd2-b63b-1c98f5563655",
+      "name": "Crear nota1",
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        896,
+        -160
+      ],
+      "parameters": {
+        "resource": "note",
+        "content": "={{ \"Nuevo contacto desde el formulario\\nServicio: \" + $('When Executed by Another Workflow').item.json.servicio + \"\\nMensaje: \" + $('When Executed by Another Workflow').item.json.mensaje }}",
+        "additionalFields": {
+          "person_id": "={{ $('Actualizar persona').item.json.id }}"
+        }
+      },
+      "credentials": {
+        "pipedriveApi": {
+          "id": "lyd6lhgR4BayyLjC",
+          "name": "Pipedrive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Buscar persona": {
+      "main": [
+        [
+          {
+            "node": "¿Existe en Pipedrive?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Existe en Pipedrive?": {
+      "main": [
+        [
+          {
+            "node": "Actualizar persona",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Crear persona",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear persona": {
+      "main": [
+        [
+          {
+            "node": "Crear negocio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear negocio": {
+      "main": [
+        [
+          {
+            "node": "Crear nota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar persona": {
+      "main": [
+        [
+          {
+            "node": "Crear nota1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Buscar persona",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "6ddeec1c-d35d-4269-a7fc-abf5e852324c",
+  "activeVersionId": "6ddeec1c-d35d-4269-a7fc-abf5e852324c",
+  "versionCounter": 77,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-17T20:24:56.992Z",
+      "createdAt": "2026-11-17T20:24:56.992Z",
+      "role": "workflow:owner",
+      "workflowId": "CckcnBJWWyJG7jWB",
+      "projectId": "jxVjeRIK2XrqFfqu",
+      "project": {
+        "updatedAt": "2026-11-12T10:10:14.659Z",
+        "createdAt": "2026-11-12T10:04:03.395Z",
+        "id": "jxVjeRIK2XrqFfqu",
+        "name": "Gari Garcia Castellanos <garigarciacastellanos@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "75861a3d-6e3e-4b02-aaa0-a43801c39ecd"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Removed Interruptor de prueba CRM, Fallo de CRM provocado",
+    "description": "Elimina el interruptor de prueba CRM (If + Stop and Error) y reconecta el trigger directamente con Buscar persona, según el final de la Parte 5 de PLAN-LEADS.md."
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-14T19:27:39.497Z",
+  "updatedAt": "2026-11-14T19:54:24.659Z",
   "createdAt": "2026-11-12T13:43:38.855Z",
   "id": "Hfa9nxTioArlfUC2",
   "name": "Formulario de contacto",
@@ -511,7 +511,10 @@
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
-    "availableInMCP": true
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "4bLruDomJDG40YPo"
   },
   "staticData": null,
   "meta": {
@@ -523,7 +526,7 @@
   "pinData": {},
   "versionId": "64d04434-48bc-44d6-b440-28e604d15b9a",
   "activeVersionId": null,
-  "versionCounter": 98,
+  "versionCounter": 100,
   "triggerCount": 0,
   "sourceWorkflowId": null,
   "tags": [],
